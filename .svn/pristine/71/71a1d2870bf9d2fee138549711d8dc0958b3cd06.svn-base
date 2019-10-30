@@ -1,0 +1,153 @@
+html,body{
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-size: 12px;
+    /*禁止选择*/
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Chrome/Safari/Opera */
+    -khtml-user-select: none; /* Konqueror */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none;
+}
+#app-root{
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+
+}
+input,select{
+    outline: none;
+}
+select:focus{outline:none;}
+
+.c_blue{
+    color: #282afd;
+}
+.c_red{
+    color: #ff0b0b;
+}
+.data-table{
+    background: #fff;
+    margin-top: 10px;
+    position: relative;
+}
+.data-table .layui-table-body.layui-table-main{
+    /* border-bottom: 1px solid #e6e6e6; */
+}
+.data-table .layui-table-view{
+    border-bottom: none;
+    border-left: none;
+}
+.data-table .layui-table,.data-table .layui-table-view{
+    margin: 0px 0;  
+    
+}
+.data-table .layui-table-header{
+    position: relative;
+    z-index: 1;
+}
+.layui-table-body{
+    z-index: 1;
+}
+.data-table .layui-table-header,.data-table .layui-table-header tr{
+    background-color:#EDF3F7 !important;
+    color: #333;
+}
+.data-table .layui-table td, .data-table .layui-table th {
+    padding: 1px 0;
+}
+.data-table table.layui-table{
+    border-bottom: 1px solid #e6e6e6;
+}
+
+
+.trade_btn{
+    display: inline-block;
+    background: url(../imgs/trade_btn_bg.png) no-repeat;
+    background-position: 0 0;
+    width: 60px;
+    height: 21px;
+    border: none;
+    cursor: pointer;
+    text-align: center;
+    font-size: 12px;
+    line-height: 21px;
+}
+.trade_btn:hover{
+    background-position: 0 -42px;
+}
+.trade_btn:active{
+    background-position: 0 -21px;
+    color: #FC0000;
+}
+
+.input_no_border{
+    border:none !important;
+    background:#ECF3F6;
+}
+
+.layui-form{
+    height: 100% !important;
+    position: absolute;
+    width: 100%;
+}
+.layui-table-box{
+    height: 100% !important;
+}
+.layer-table-Rline{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    left: 0;
+    top: 0;
+}
+.layer-table-Rline div{
+    height: 100%;
+    float: left;
+    border-right: 1px solid #C0C0C0;
+    padding: 0 17px 0 17px;
+    box-sizing: border-box;
+    margin-left: 1px;
+}
+.table-hover{
+    background: rgba(150,210,255, 1);
+}
+.layui-table-header table  thead  tr th{
+    border-bottom: none !important;
+}
+
+.page_title{
+    position: relative;
+    float: left;
+    display: inline-block;
+    background-image: url(../imgs/nav_titl_bg.png);
+    height: 18px;
+    line-height: 18px;
+    cursor: pointer;
+    padding: 0 15px;
+    white-space: nowrap;
+    color:#282828;
+    background-position: 0 0;
+    margin-right: 8px;
+}
+.page_title em {
+    right: -16px;
+    height: 18px;
+    width: 18px;
+    background-image: url(../imgs/nav_titl_bg.png);
+    position: absolute;
+    top: 0;
+    z-index: 1;
+    background-position: right -36px;
+}
+
+.page_title.on{
+    z-index: 2;
+    color: #FD1212;
+}

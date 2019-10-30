@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>股票交易</title>
+    <link rel="stylesheet" href="css/common.css" type="text/css" />
+    <link rel="stylesheet" href="css/index.css" type="text/css" />
+  </head>
+  <body>
+    <div id="app-root" style="position: relative;">
+
+        <div class="app_bar">
+              <div class="app_bar_title c_blue">金牛所网上交易系统~本系统提示的可卖数量，成本价盈亏数据仅供参考。</div>
+              <div class="app_act_btn">
+                <div class="min"></div>
+                <div class="max"></div>
+                <div class="close"></div>
+              </div>
+        </div>
+
+        <div id="lock_page" class="lock_page" style="display: none;">
+              <div style="text-align: center;line-height: 35px;">
+                  <div>交易界面已被锁定，请输入账号的密码解锁。</div>
+                  <div>登录密码：<input type="password" id="lockPwd"></div>
+                  <div style="margin-top: 5px;">
+                      <input type="button" value="确定" onclick="unlock();" style="display: inline-block;padding: 3px 26px;margin: 0 1px;"> 
+                      <input type="button" value="取消"  style="display: inline-block;padding: 3px 26px;margin: 0 1px;"> 
+                      <input type="button" value="退出" onclick="remote.app.quit();"  style="display: inline-block;padding: 3px 26px;margin: 0 1px;"> 
+                   </div>
+              </div>
+        </div>
+
+        <div class="act_bar">
+            <div>
+                <div class="act_item" data-cmd="quit">
+                  <img  src="imgs/icon/icon_tc.png">
+                </div>
+                <div class="act_item"  data-cmd="login">
+                    <img  src="imgs/icon/icon_dl.png">
+                </div>
+                <div class="act_item" data-cmd="lock">
+                    <img  src="imgs/icon/icon_sp.png">
+                </div>
+                <div class="act_item" data-cmd="reload">
+                    <img  src="imgs/icon/icon_sx.png">
+                </div>
+                <div class="act_item">
+                    <div style="margin-bottom: 2px;margin-top: 2px;">
+                      <select style="width:110px; font-size: 12px;">
+                        <option>沪深A股</option>
+                       
+                      </select>
+                    </div>
+                    <div>
+                        <select id="accountNo" style="width: 110px;font-size: 12px;">
+                          <option>012346578</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- <div class="act_item">
+                    <div style="margin-bottom: 2px;margin-top: 2px;">
+                      <select id="nowLoansType" style="width:100px; font-size: 12px;">
+                        <option value="3">免费账户</option>
+                        <option value="1">按天账户</option>
+                        <option value="2">按月账户</option>
+                      </select>
+                    </div>
+                </div> -->
+            </div>
+            <div  style="margin-right: 15px;">
+                <div class="act_item" >
+                    <img  src="imgs/icon/icon_sz.png">
+                  </div>
+                  <div class="act_item">
+                      <img  src="imgs/icon/icon_zy.png">
+                  </div>
+                  <div class="act_item">
+                      <img  src="imgs/icon/icon_jj.png">
+                  </div>
+            </div>
+        </div>
+
+
+        <div class="stock_body">
+            <div class="stock_left">
+                <div class="menu_list" style="padding-top: 3px;">
+                    <div class="item icon_buy" data-href="trade/buy.html"><span>买入（F1）</span></div>
+                    <div class="item icon_sell" data-href="trade/sell.html"><span>卖出（F2）</span></div>
+                    <div class="item icon_cancel" data-href="trade/cancle.html"><span>撤单（F3）</span></div>
+                    <div>
+                      <div class="item icon_search"><span>查询（F4）</span></div>
+                      <div class="child">
+                          <div class="item on" data-href="positon/index.html"><span>资金股票</span></div>
+                          <div class="item" data-href="tradehis/tday.html"><span>当日成交</span></div>
+                          <div class="item" data-href="tradehis/eday.html"><span>当日委托</span></div>
+                          <div class="item" data-href="tradehis/tall.html"><span>历史成交</span></div>
+                          <div class="item" data-href="tradehis/eall.html"><span>历史委托</span></div>
+                          
+                      </div>
+                    </div>
+                    <div>
+                        <div class="item icon_loan"><span>借贷资金</span></div>
+                        <div class="child">
+                            <div class="item"  data-href="loans/loan.html"><span>我要借款</span></div>
+                            <!-- <div class="item"  data-href="loans/repay.html"><span>我要还款</span></div> -->
+                            <div class="item" data-href="loans/his.html"><span>已还借款</span></div>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="item icon_bank"><span>银证转账</span></div>
+                        <div class="child">
+                            <div class="item icon_money" data-href="money/rec.html" ><span>转入资金</span></div>
+                            <div class="item icon_money" data-href="money/atm.html"><span>转出资金</span></div>
+                            <div class="item icon_money" data-href="money/his.html"><span>查询转账</span></div>
+                            <div class="item icon_money" data-href="money/log.html"><span>资金明细</span></div>
+                        </div>
+                    </div>
+
+                </div>
+
+
+
+            </div>
+
+            <webview id="min_body"  nodeintegration frameborder="0" style="display:inline-flex;"></webview>
+
+
+
+        </div>
+
+        <div class="app_foot">
+              <span style="padding: 0 15px;">金牛所软件及技术有限公司</span><span class="c_red">温馨提示：股票配资交易，杠杆越低风险越小，杠杆越高风险越大，请轻仓操作减少风险，波段补仓，合理利用股票配资，稳健盈利才是正途。投资有风险，入市须谨慎。</span>
+        </div>
+       
+    </div>
+
+    <!-- <script>
+      var webview = document.getElementById("min_body");
+    webview.addEventListener("dom-ready", function() {
+      webview.openDevTools();
+    });
+    </script>  -->
+
+    <script>window.$ = window.jQuery = require("./lib/jquery.min");</script>
+    <script src="./js/common.js"></script>
+    <script src="./js/index.js"></script>
+    <script>
+      http.get('/api/trade/get_user_assert',{userId:getNowUser().id,sectionType:2},function(res) {
+          if(res.status==200){
+              $('#accountNo').html('<option>'+res.data.accountNo+'</option>');
+          }
+      })
+    </script>
+
+<script>
+  const { ipcRenderer } = require('electron');
+  ipcRenderer.on('message', (event, { message, data }) => {
+      switch (message) {
+          case 'isUpdateNow':
+          var result = remote.app.untils.dialogsync('检测到当前有新的版本。','版本提示','info',{buttons:['立即更新','关闭'],defaultId :0,cancelId :1,noLink:true});
+          if(result==0){
+            ipcRenderer.send('updateNow');
+          }else{
+            close();
+          }
+          break;
+      }
+  });
+
+
+  setInterval(function() {
+    ipcRenderer.send('checkUpdate');
+  },600000)
+
+</script>
+
+  </body>
+</html>

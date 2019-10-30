@@ -1,0 +1,85 @@
+const axios = require('./http-request');
+const querystring = require('querystring');
+
+const conf = require('./conf');
+const untils = require('./untils');
+const winManger = require('./wins');
+var CLASS = function(app){
+    this.app = app;
+}
+
+CLASS.prototype.close = function(){
+    this.app.close();
+}
+CLASS.prototype.openUrl = function(url){
+    require('electron').shell.openExternal(url);
+}
+CLASS.prototype.login=function(param,cb){
+    let tempPwd = param.password;
+    param.password = untils.rsa(param.password,conf.login_pem);
+    param = untils.dataSign(param);
+
+    axios.post(conf.server_url+'/api/user/login',querystring.stringify(param),{
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+                'User-Agent':'pc_app',
+                'Devices-Token':'pc_app',
+                'timestamp':(new Date()).getTime(),
+                //'accessKey':account
+            }
+        }).then((res)=>{
+
+            if(res.status==200){
+                global.userData=res.data;
+                global.userData.pwd = untils.md5(tempPwd);
+                //console.log(userData);
+                global.mainWindow = winManger.mainWindow();
+            }
+            cb && cb(JSON.parse(JSON.stringify(res)));
+        }); 
+}
+CLASS.prototype.get=function(url,param,cb){
+    let header= {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent':'pc_app',
+        'Devices-Token':'pc_app',
+        'timestamp':(new Date()).getTime(),
+        //'accessKey':account
+    }
+    if(false !== global.userData){
+        delete header["Devices-Token"];
+        header.accessKey = global.userData.xToken
+    }
+    param = untils.dataSign(param);
+
+    axios.get(conf.server_url+url,{params:param,
+            headers: header
+        }).then((res)=>{
+            cb && cb(JSON.parse(JSON.stringify(res)));
+        }); 
+}
+CLASS.prototype.post=function(url,param,cb){
+    
+    let header= {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'User-Agent':'pc_app',
+        'Devices-Token':'pc_app',
+        'timestamp':(new Date()).getTime(),
+        //'accessKey':account
+    }
+    if(false !== global.userData){
+        delete header["Devices-Token"];
+        header.accessKey = global.userData.xToken
+    }
+    param = untils.dataSign(param);
+    axios.post(conf.server_url+url,querystring.stringify(param),{
+            headers: header
+        }).then((res)=>{
+            cb && cb(JSON.parse(JSON.stringify(res)));
+        }); 
+}
+CLASS.prototype.copy=function(txt){
+    require('electron').clipboard.writeText(txt);
+}
+
+module.exports = CLASS;

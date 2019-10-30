@@ -1,0 +1,64 @@
+
+.page_header{
+    border-bottom:solid 1px #d8d8d8;
+    font-size: 12px;
+    flex: 0 1 auto;
+}
+.page_body{
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+.page_title{
+    display: inline-block;
+    position: relative;
+    padding-right: 23px;
+    height: 23px;
+    line-height: 23px;
+
+}
+ .page_title:after{
+    content: ' ';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width:0px;
+    height: 0px;
+    border-top:solid 23px #d8d8d8;
+    border-left:solid 23px rgba(0, 0, 0, 0);
+    z-index: 1;
+} 
+
+ .page_title::before{
+    content: ' ';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width:0px;
+    height: 0px;
+    border-top:solid 21px #ecf3f6;
+    border-left:solid 21px rgba(0, 0, 0, 0);
+    z-index: 2;
+    
+} 
+.user_nums {
+    margin-left: 20px;
+    font-size:13px; 
+    margin-top:8px;
+    clear: both;
+    overflow: hidden;
+    flex: 0 1 auto;
+}
+.user_nums .user_item{
+    width: 150px;
+    text-align: right;
+    float: left;
+    margin-right: 20px;
+}
+.user_nums .user_item  .item_lable{
+    float: left;
+    color: #333;
+}
+.data-table{
+    flex: 1 1 auto;
+}

@@ -1,0 +1,164 @@
+$(function(){
+
+    //操作按钮
+    $('.app_act_btn').on('click','div',function(){
+        if($(this).hasClass('close')){
+            remote.app.quit();
+            return;
+        }
+        if($(this).hasClass('min')){
+            remote.getCurrentWindow().minimize();
+            return;
+        }
+        if($(this).hasClass('max')){
+            const browserWindow = remote.getCurrentWindow();
+            let isMaxed = $(this).hasClass('isMax');
+            if (isMaxed) {
+                $(this).removeClass('isMax');
+                browserWindow.unmaximize();
+                
+            } else {
+                $(this).addClass('isMax');
+                browserWindow.maximize();
+            }
+           return;
+        }
+    });
+    
+    //菜单跳转
+    $('.menu_list').on('click','.item',function(){
+        if($(this).hasClass('on')){
+            return false;
+        }
+        $('.menu_list .on').removeClass('on');
+        var href = $(this).attr('data-href');
+        if(href){
+            gotoUrl(href);
+        }else{
+            $(this).addClass('on');
+        }
+        
+    })
+    //按键监听
+    $(document).keydown(function(event){
+        var act={};
+        act['112'] = function(){ gotoUrl('trade/buy.html');} 
+        act['113']= function(){ gotoUrl('trade/sell.html');}
+        act['114']= function(){ gotoUrl('trade/cancle.html');}
+        act['115']= function(){ gotoUrl('positon/index.html');}
+        act['116']='';
+       
+        if(event.keyCode+'' in act){ //F1-F5 112-116
+            $('.menu_list .on').removeClass('on');
+            if(typeof act[event.keyCode+''] === 'function'){
+                act[event.keyCode+''].call();    
+            }
+            cancelBubble=true;
+            event.stopPropagation();
+        }
+    })
+    
+    var loans = getCache('loans');
+    $('#nowLoansType').val(loans.nowType);
+
+    $('body').on('change','#nowLoansType',function(){
+        loans.nowType=$(this).val();
+        setCache("loans",loans);
+        even.emit("change_account");
+    });
+
+    setTimeout(() => {
+       gotoUrl('positon/index.html'); 
+    }, 30);
+
+});
+
+function gotoUrl(url){
+    $('.menu_list .on').removeClass('on');
+    $('#min_body').attr('src',url); 
+    $('.menu_list .item').each(function(){
+         if($(this).attr('data-href')==url){
+             $(this).addClass('on');
+             return;
+         }
+    })   
+}
+
+var handel={
+    'quit':()=>{
+        remote.app.quit();
+    },
+    'login':()=>{
+        remote.app.winManger.loginWindow();
+        setTimeout(() => {
+            close();
+        },2);
+    },
+    'lock':()=>{
+        $('#lock_page').show();
+    },
+    'reload':()=>{
+        var webview = document.getElementById("min_body");
+        webview.reload();
+    },
+    'mini':()=>{
+        console.log(window.screen.availHeight,window.screen.availWidth)
+        remote.getCurrentWindow().setSize(window.screen.availWidth,window.screen.availHeight*0.4);
+        remote.getCurrentWindow().setPosition(0,window.screen.availHeight*0.6);
+    }
+
+}
+
+function unlock(){
+    var pwd = $('#lockPwd').val();
+    if(getNowUser().pwd!=remote.app.untils.md5(pwd)){
+        remote.app.untils.alert('密码错误，解锁失败','提示','error');
+        return;
+    }else{
+        $('#lockPwd').val('');
+        $('#lock_page').hide();
+    }
+}
+
+$(function(){
+    $('.act_bar').on('click','.act_item',function(){
+        var cmd = $(this).attr('data-cmd');
+        if(cmd){
+            handel[cmd].call();
+        }
+    });
+})
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

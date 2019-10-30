@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/trade.css" type="text/css" />
+
+  </head>
+  <body>
+    <div id="app-root">
+       
+        <div class="page_body">
+        
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+
+
+    </div>
+    <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+    
+
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>  
+    
+    <script>
+         var table = layui.table;
+
+         function getOrder(){
+          let loans = getCache('loans');
+            getEntrustList({
+              type:2,
+              sectionType:loans.nowType
+            },function(res){  
+                console.log('getEntrustList',res);
+                formatTable(table,res,[
+                  {field: 'createDate', title: '委托时间', width: 80,templet:function(d){
+                    return remote.app.untils.formatTime("hh:mm:ss",d.createDate);
+                  }},
+                  {field: 'code', title: '证券代码', width: 80},
+                  {field: 'name', title: '证券名称', width: 80},
+                  {field: 'tradeType', title: '操作', width: 80,templet: function(d){
+                    return d.tradeType == 2? '买入':'卖出';
+                  }},
+                  { title: '备注', width: 100,templet: function(d){
+                    return d.usableVolume == 0? '未成交':'部分成交';
+                  }},
+                  {field: 'volume', title: '委托数量',align:'right', width: 80},
+                  {field: 'usableVolume', title: '成交数量',align:'right', width: 80},
+                  {field: 'price', title: '委托价格',align:'right', width: 80},
+                  {field: 'price', title: '成交均价',align:'right', width: 80,templet: function(d){
+                    return d.usableVolume == 0? '0.00':d.price;
+                  }},
+                
+                  {title: '撤单', width: 100,align:'right',templet: function(d){
+                    //return '<a class="c_blue" lay-event="cancle" href="javascript:void(0);" onclick="cancleOrder('+d.id+')">撤单</a>'
+                    return '<a class="c_blue" lay-event="cancle" href="javascript:void(0);">撤单</a>'
+                  }}
+                ],{
+                  done: function(res, curr, count){
+                    if(res.data.length>0){
+                        for (let index = 0; index < res.data.length; index++) {
+                          var color = '#0000FA';
+                          if(res.data[index].tradeType==2){
+                            color = '#FC0000';
+                          }
+                          $('tr[data-index="'+index+'"]').css('color',color);
+                        }
+                      }
+                  }
+                });
+
+            });
+         }
+
+         getOrder();
+
+        
+          //操作买入卖出
+         function cancleOrder(id){
+
+              remote.app.sys.post('/api/trade/coin_cancel_etrade',{entrustId:id},function(res){
+                  if(res.status ==200 ){
+                      getOrder();
+                      //cb && cb(JSON.parse(JSON.stringify(res.data)));
+                  }
+                  remote.app.untils.alert(res.msg,'委托提醒','warning');
+              })  
+           
+         }
+         
+          //监听工具条 
+    table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+      var data = obj.data; //获得当前行数据
+      var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+      var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+     
+      if(layEvent === 'cancle'){ //查看
+        //do somehing
+          
+        var res = remote.app.untils.dialogsync('操作类别：撤单\n买卖方向：'+(data.tradeType == 2? '买入':'卖出')+'\n股票代码:'+data.code+' '+data.name,'提示','question',{buttons:['确认','取消'],defaultId :0,cancelId :1,noLink:true});
+            if(res==0){
+              cancleOrder(data.id);
+            }
+            return;
+
+      } 
+     
+    });
+          
+
+
+
+    </script>
+  </body>
+</html>

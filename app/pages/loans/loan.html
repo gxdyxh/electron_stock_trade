@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/trade.css" type="text/css" />
+    <style>
+
+    .trade_box_item .input_box{
+      width: 140px;
+    }
+    .trade_nums {
+      width: 215px;
+    }
+    .trade_box_item .input_box input {
+        width: 98%;
+    }
+    .wudang_info{
+      margin-top: 20px;
+    }
+    .wd_item {
+      line-height: 20px;
+    }
+    .wd_item .lable {
+      width: 70px;
+    }
+    .wd_item .volume{
+      color: #ff0b0b;
+    }
+    .wd_item .volume {
+      width: 120px; 
+    }
+    </style>
+  </head>
+  <body>
+    <div id="app-root">
+        <div class="page_header">
+            <div class="trade_box">
+                <div class="trade_nums buy">
+
+                  <div class="trade_type_title">我要借款</div>
+                  <div class="trade_box_item">
+                    <label>借款类型</label>
+                    <div class="input_box" style="vertical-align: middle;">
+                      <select id="loansType" style="float: left;width:80px;">
+                        <option value="1">按天借款</option>
+                        <option value="2">按月借款</option>
+                      </select>
+                      <select id="multiplesType" style="float: right;width:50px;"></select>
+                    </div>
+                  </div>
+                  
+                  <div class="trade_box_item">
+                    <label>投资本金</label>
+                    <div class="input_box">
+                      <input type="number" id="money" value="2000" maxlength="6">
+                    </div>
+                  </div>
+                
+
+                  <div class="trade_box_item">
+                    <label>借款金额</label>
+                    <div class="input_box">
+                      <div class="volume jkje">-</div>
+                    </div>
+                  </div>
+
+                  <div class="trade_box_item">
+                    <label>操盘资金</label>
+                    <div class="input_box">
+                      <div class="volume cpzijin">-</div>
+                    </div>
+                  </div>
+
+
+                  <div style="margin-top: 10px;">
+                    <a class="trade_btn" href="javascript:void(0);" onclick="initBuySell();"> 重填 </a>
+                    <a class="trade_btn" href="javascript:void(0);" onclick="actionLoans();"> 借款 </a>
+                  </div>
+
+
+                </div>
+
+                <div class="wudang_box">
+                  <div style="color: #b1afaf; font-size:12px;">&nbsp;&nbsp;</div>
+                  <div class="wudang_info" style="border: none;">
+                    <div class="wd_item wd_sell_5">
+                      <div class="lable">我的余额</div>
+                     
+                      <div class="volume " id="useAssets">-</div>
+                    </div>
+
+                      <div class="wd_item wd_sell_5">
+                          <div class="lable">当前利率</div>
+                         
+                          <div class="volume dqlv">-</div>
+                      </div>
+                      <div class="wd_item wd_sell_4">
+                          <div class="lable">每日利息</div>
+                          
+                          <div class="volume mrlx">-</div>
+                      </div>
+                     
+                      
+                  </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="page_body">
+        
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+
+
+    </div>
+   
+   <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+    <script src="../js/loans.js"></script>
+
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>  
+    
+    <script>
+         var table = layui.table;
+        
+         function initBuySell(){
+            $('#money').val('');
+            moneyChange();
+         }
+
+
+         function getOrder(){
+          let loans = getCache('loans');
+            getList('/api/loans/refund_loans_detail',{type:0,pageSize:1000,pageNumber:1},function(res){  
+
+                formatTable(table,res,[
+                  {field: 'loansType', title: '借款类型', width: 80,templet: function(d){
+                      if(d.loansType==1){
+                        return '按天借款';
+                      }
+                      if(d.loansType==2){
+                        return '按月借款';
+                      }
+                    return '免费体验'
+                  }},
+                  {field: 'loansMultiple', title: '借款倍数',align:'right', width: 80,templet: function(d){return d.loansMultiple+'倍'}},
+                  {field: 'money', title: '投资本金',align:'right', width: 80},
+                  {field: 'loansMoney', title: '借款金额',align:'right', width: 80},
+                  {field: 'adminCostRate', title: '当前利率',align:'right', width: 80,templet: function(d){return d.adminCostRate+'%'}},
+                  {field: 'adminCost', title: '利息费',align:'right', width: 120,templet: function(d){return parseFloat(d.adminCost).toFixed(2)+'元/'+(d.loansType==2?'月':'天')}},
+                  {field: 'createDate', title: '借款时间',align:'right', width: 150,templet: function(d){return remote.app.untils.formatTime("yyyy/MM/dd hh:mm:ss",d.createDate);}},
+                  {field: 'loansType', title: '备注',align:'right', width: 80,templet: function(d){
+                      if(d.loansType==1){
+                        return '自动续费';
+                      }
+                      if(d.loansType==2){
+                        return '自动续费';
+                      }
+                    return '免息体验'
+                  }},
+                  {field: 'volume', title: '操作', width: 80,templet: function(d){return '<a href="javascript:void(0);" class="c_blue"  lay-event="repayLoan" href="javascript:void(0);">立即还款</a>'}},
+                ]);
+
+            });
+         }
+
+        
+        $('body').on('change','#loansType',function(){
+          initMultip($(this).val());
+        })
+        $('body').on('change','#multiplesType',function(){
+          moneyChange();
+        })
+        
+        function initMultip(type){
+          getMultiples(type,function(res){
+            $('#multiplesType').html('');
+            var type_str =  type == 1 ? '天':'月';
+            for (let index = 0; index < res.length; index++) {
+              const element = res[index];
+                var select = '';
+              if(index==(res.length-1)){
+                select = 'selected';
+              }
+
+              $('#multiplesType').append('<option  value="'+index+'" '+select+'>'+element.loansMultiple+'倍</option>');
+              //$('#multiplesType').append('<option value="'+index+'">'+element.loansMultiple+'倍 - '+element.adminCostRate+'%/'+type_str+'</option>');
+            }
+            moneyChange();
+           
+          })
+        }
+        initMultip(1);
+        
+
+        function getUserVolume(params) {
+           http.get('/api/assets/my_wallet_balance',{accountId:1},function (res) {
+              console.log('getUserVolume',res);
+              if(res.status==200){
+                $('#useAssets').text(parseFloat(res.data.volume).toFixed(2)+'元');
+              }else{
+                layer.msg(res.msg);
+              }   
+           })
+         }
+        
+         getUserVolume();
+         getOrder();
+
+         
+          //操作配资
+         function actionLoans(){
+
+            var price = parseFloat($('#money').val());
+            price = isNaN(price) ? 0 : price ;
+           
+            if(!price){
+                remote.app.untils.alert('请输入借款本金','委托提醒','warning');
+                return ;
+            }
+            var  sectionType = parseFloat($('#loansType').val());
+            var multiple =  multipleConf[$('#loansType').val()][$('#multiplesType').val()]
+            var loansMultiple = multiple.loansMultiple;
+            var uid = getNowUser().id;
+          
+
+
+            var result = remote.app.untils.dialogsync('操作类别：借款\n投资本金：'+$('#money').val()+'元\n借款金额：'+$('.jkje').text(),'提示','question',{buttons:['借款确认','取消'],defaultId :0,cancelId :1,noLink:true});
+            if(result==0){
+              remote.app.sys.post('/api/loans/loans_config',{money:price,sectionType:sectionType,loansMultiple:loansMultiple,userId:uid},function(res){
+                  if(res.status ==200 ){
+                      initBuySell();
+                      getOrder();
+                      getUserAssert();
+                      //cb && cb(JSON.parse(JSON.stringify(res.data)));
+                  }
+                  remote.app.untils.alert(res.msg,'配资提醒','warning');
+              }) 
+            }
+            
+            
+
+         }
+
+
+
+          function repayLoan(id){
+            http.post('/api/loans/refund_loans',{logId:id},function(res){
+                 if(res.status ==200 ){
+                     getOrder();
+                     getUserAssert();
+                     //cb && cb(JSON.parse(JSON.stringify(res.data)));
+                 }
+                 remote.app.untils.alert(res.msg,'还款提醒','warning');
+            })
+          }
+
+
+              //监听工具条 
+    table.on('tool(test)', function(obj){ //注：tool 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+      var data = obj.data; //获得当前行数据
+      var layEvent = obj.event; //获得 lay-event 对应的值（也可以是表头的 event 参数对应的值）
+      var tr = obj.tr; //获得当前行 tr 的 DOM 对象（如果有的话）
+     
+      if(layEvent === 'repayLoan'){ //查看
+        //do somehing
+          
+        var result = remote.app.untils.dialogsync('操作类别：还款\n还款金额：'+data.loansMoney,'提示','question',{buttons:['还款确认','取消'],defaultId :0,cancelId :1,noLink:true});
+            if(result==0){
+              cancleOrder(data.id);
+            }
+            return;
+
+      } 
+     
+    });
+
+          $(function(){
+              $('body').on('input','#money',function(){
+                  $(this).val($(this).val().replace(/[^\d]/g,''));
+                  moneyChange();
+              })
+          })
+
+          function moneyChange() {
+                    var deposit = $('#money').val() ;
+                    
+                    deposit = parseFloat(deposit);
+                    if(isNaN(deposit)){
+                      deposit = 0 ;
+                    }
+
+                    var multiple =  multipleConf[$('#loansType').val()][$('#multiplesType').val()]
+                    var loansMultiple = multiple.loansMultiple;
+                    var adminCostRate = multiple.adminCostRate;
+                    
+                    $('.dqlv').text(adminCostRate+'%/'+($('#loansType').val()==2?'月':'天'));
+                    var cost = deposit*loansMultiple*adminCostRate
+                    $('.mrlx').text(cost>0? parseFloat(cost/100).toFixed(2)+'元' :'-');
+                    $('.jkje').text(deposit>0? parseFloat(deposit*loansMultiple).toFixed(2)+'元' :'-');
+                    $('.cpzijin').text(deposit>0? parseFloat(deposit*loansMultiple+deposit).toFixed(2)+'元' :'-');
+
+                }
+
+
+    </script>
+  </body>
+</html>

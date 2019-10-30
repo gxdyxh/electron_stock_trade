@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/trade.css" type="text/css" />
+    <style>
+
+    .trade_box_item .input_box{
+      width: 140px;
+    }
+    .trade_nums {
+      width: 215px;
+    }
+    .trade_box_item .input_box input {
+        width: 98%;
+    }
+    .wudang_info{
+      margin-top: 0px;
+    }
+    .wd_item {
+      line-height: 30px;
+    }
+    .wd_item .lable {
+      width: 70px;
+      color: #ff0b0b;
+    }
+   
+    .wd_item .volume {
+      width: 90px; 
+    }
+    .wudang_box{
+      width: unset;
+    }
+    .copyBtn{
+      color:#282afd;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="app-root">
+        
+        <div class="page_body">
+        
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+    </div>
+   
+    <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+    
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+    <script src="../js/loans.js"></script>
+
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>  
+    
+    <script>
+
+        var table = layui.table;
+
+
+         function getOrder(){
+          let loans = getCache('loans');
+            getList('/api/user/recharge_order_list',{orderStatus:10,pageSize:1000,pageNumber:1},function(res){  
+
+                formatTable(table,res,[
+                  {field:'acttype', title: '名称', width: 80,templet: function(d){
+                      if(d.acttype==1){
+                        return '银证转入';
+                      }
+                    return '银证转出'
+                  }},
+                  
+                  {field: 'money', title: '金额',align:'right', width: 80},
+                  {field: 'createDate', title: '时间',align:'right', width: 150,templet: function(d){return remote.app.untils.formatTime("yyyy/MM/dd hh:mm:ss",d.createDate);}},
+                  {field: 'orderNo', title: '订单号',align:'right', width: 120},
+                  {field: 'orderStatus', title: '状态', width: 80,templet: function(d){
+                      if(d.orderStatus==0){
+                          return '<span color="red">失败</span>';
+                      }
+                      if(d.orderStatus==1){
+                          if(d.acttype==1){
+                              return '待付款';   
+                          }else{
+                              return '提现中'; 
+                          }
+                      }
+                      if(d.orderStatus==2){
+                          return '<span color="green">成功</span>';
+                      }
+                      if(d.orderStatus==3){
+                          return '待确认';
+                      }
+                      return '--'
+                    }
+                  },
+                ]);
+
+            });
+         }
+
+        
+         getOrder();
+
+         
+
+    </script>
+  </body>
+</html>

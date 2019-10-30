@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/trade.css" type="text/css" />
+    <style>
+
+    .trade_box_item .input_box{
+      width: 140px;
+    }
+    .trade_nums {
+      width: 215px;
+    }
+    .trade_box_item .input_box input {
+        width: 98%;
+    }
+    .wudang_info{
+      margin-top: 0px;
+    }
+    .wd_item {
+      line-height: 30px;
+    }
+    .wd_item .lable {
+      width: 70px;
+      color: #ff0b0b;
+    }
+   
+    .wd_item .volume {
+      width: 90px; 
+    }
+    .wudang_box{
+      width: unset;
+    }
+    .copyBtn{
+      color:#282afd;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="app-root">
+
+        <div class="page_header" >
+            <div style="padding: 5px 0 0 5px;">
+              <a class="trade_btn" href="javascript:void(0);" onclick="topage(-1);"> 上一页 </a>
+              <a class="trade_btn" href="javascript:void(0);" onclick="topage(1);"> 下一页 </a>
+            </div>
+         </div>
+
+        <div class="page_body">
+        
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+    </div>
+   
+    <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+    
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+    <script src="../js/loans.js"></script>
+
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>  
+    
+    <script>
+
+         var table = layui.table;
+         var canpage=true;
+         var page=1;
+         var pageSize=20;
+
+         function getOrder(page){
+          
+            getList('/api/assets/transfer_account_details',{pageSize:pageSize,pageNumber:page,detailType:1},function(res){  
+                console.log('transfer_account_details',res);
+                
+                if(res.length==20){
+                  canpage=true;
+                }else{
+                  canpage=false;
+                }
+
+                var type_obj={};
+                type_obj['1']= '银证转入';  
+                type_obj['2']= '银证转出';
+                type_obj['3']= '提现退款';
+                type_obj['4']= '余额结息';
+                type_obj['6']= '按天借款';
+                type_obj['7']= '按月借款';
+                type_obj['8']= '赠金结算';
+                type_obj['9']= '交易结算';
+                type_obj['11']='按天利息';
+                type_obj['12']='按月利息';
+                type_obj['17']='追加本金';
+                type_obj['19']='竞猜下注';
+                type_obj['20']='竞猜收益';
+
+                formatTable(table,res,[
+                  {field:'tradeType', title: '类型', width: 100,templet: function(d){
+                    return type_obj[d.tradeType]
+                  }},
+                  
+                  {field: 'volume', title: '金额',align:'right', width: 100,templet: function(d){
+                      if(d.transferType==2){
+                        return '-'+parseFloat(d.volume).toFixed(2);
+                      }
+                    return parseFloat(d.volume).toFixed(2);
+                  }},
+
+                  {field: 'balance', title: '余额',align:'right', width: 120,templet: function(d){return parseFloat(d.balance).toFixed(2);}},
+                  {field: 'createDate', title: '时间',align:'right', width: 150,templet: function(d){return remote.app.untils.formatTime("yyyy/MM/dd hh:mm:ss",d.createDate);}},
+                
+                ],{
+                  limit:20,
+                  done: function(res, curr, count){
+                    if(res.data.length>0){
+                        for (let index = 0; index < res.data.length; index++) {
+                          var color = '#FC0000';
+                          if(res.data[index].transferType==2){
+                            color = '#0000FA';
+                          }
+                          $('tr[data-index="'+index+'"]').css('color',color);
+                        }
+                      }
+                  }
+                });
+
+            });
+         }
+
+        
+         getOrder(page);
+
+        function topage(type) {
+          if(type<0){
+            page = page<2 ? 1 :  page-1  ;
+          }else{
+            page = canpage ? page+1 :  page;
+          }
+          getOrder(page);
+        }
+    </script>
+  </body>
+</html>

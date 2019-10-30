@@ -1,0 +1,125 @@
+.page_header{
+    font-size: 12px;
+    flex: 0 1 auto;
+}
+.page_body{
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+.data-table {
+    flex: 1 1 auto;
+}
+.trade_box{
+    font-size: 13px;
+    line-height: 1.5;
+    margin-top: 5px;
+    margin-left: 24px;
+    display: flex;
+    justify-content: flex-start;
+}
+.trade_nums{
+    display: inline-block;
+    width: 200px;
+    font-family: serif !important;
+}
+.trade_type_title{
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+.trade_box_item{
+
+}
+.trade_box_item label{
+    display: inline-block;
+    width: 60px;
+}
+.trade_box_item .input_box{
+    display: inline-block;
+    width: 120px;
+}
+
+.trade_box_item .input_box input{
+    width: 100%;
+    font-size: 12px;
+}
+.trade_nums.buy .trade_type_title,.trade_nums.buy .trade_box_item label{
+    color: #FC0000;
+}
+
+.trade_nums.sell .trade_type_title,.trade_nums.sell .trade_box_item label{
+    color: #0000FA;
+}
+
+
+
+.wudang_box{
+    margin-left: 15px;
+    display: inline-block;
+    width: 200px;
+}
+.wudang_info{
+    border: 1px solid #AEBBCA;
+    
+    font-size: 12px;
+}
+.wd_item{
+    display: flex;
+    justify-content: space-between;
+    line-height: 15px;
+    padding: 0 2px;
+   
+}
+.wd_item .lable{
+    width: 30px;
+    flex: 0 0 auto;
+}
+.wd_item .price{
+    width: 50px;
+    text-align: right;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    height: 15px;
+    padding: 1px;
+}
+
+div[class*="wd_sell_"] .price:hover,div[class*="wd_buy_"] .price:hover{
+    border: 1px solid #FC0000;
+    padding: 0px;
+}
+
+.wd_item .lb{
+    text-align: right;
+    flex: 1 0 auto;
+    box-sizing: border-box;
+    padding-left: 5px;
+    text-align: right;
+}
+.wd_item .process{
+    display: inline-block;
+    background: #FC0000;
+    height: 10px;
+}
+
+div[class*="wd_sell_"] .process{
+    background: #0000FA !important;
+}
+
+.wd_item .volume{
+    width: 50px;
+    text-align: right;
+    flex: 0 0 auto;
+}
+.t-border{
+    border-top: 1px solid #AEBBCA;
+}
+.b-border{
+    border-bottom: 1px solid #AEBBCA;
+}
+
+.tset{
+    display: flex;
+    flex-direction: row;
+    
+}

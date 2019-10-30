@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/position.css" type="text/css" />
+  </head>
+  <body>
+    <div id="app-root">
+        <div class="page_header" style="padding-top: 7px;">
+          <div class="page_title on">
+            <span title="人民币">人民币</span>
+            <em></em>
+          </div>
+        </div>
+
+        <div class="page_body">
+          
+          <div class="user_nums">
+            
+            <div class="user_item c_red">
+                <div class="item_lable">
+                  总  资  产
+                </div>
+                <span id="sumAssets">0.00</span>
+            </div>
+            <div class="user_item c_red">
+                <div class="item_lable">
+                  可用金额
+                </div>
+                <span id="useAssets">0.00</span>
+            </div>
+           
+            <div class="user_item c_red">
+                <div class="item_lable">
+                  投资本金
+                </div>
+                <span id="netAssets" style="color: #4885df;">0.00</span>
+            </div>
+            <div class="user_item c_red">
+                <div class="item_lable">
+                    预警线
+                </div>
+                <span id="lossWarningLine" style="color: #4885df;">0.00</span>
+            </div>
+
+          </div>
+
+          <div class="user_nums">
+            
+              <div class="user_item c_red">
+                  <div class="item_lable">
+                    持仓市值
+                  </div>
+                  <span id="positionAssets">0.00</span>
+              </div>
+              <div class="user_item c_red">
+                  <div class="item_lable">
+                    浮动盈亏
+                  </div>
+                  <span id="sumProfitLoss">0.0</span>
+              </div>
+              <div class="user_item c_red">
+                  <div class="item_lable">
+                    借款金额
+                  </div>
+                  <span id="configAssets" style="color: #4885df;">0.00</span>
+              </div>
+              <div class="user_item c_red">
+                  <div class="item_lable">
+                      止损线
+                  </div>
+                  <span id="lossUnwindLine" style="color: #f04949;">0.00</span>
+              </div>
+  
+            </div>
+
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+    </div>
+
+    <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+  
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>  
+
+   <!-- <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+		<script>eruda.init();</script> -->
+    
+    <script>
+         var table = layui.table;
+        
+         
+          function getOrder(){
+          let loans = getCache('loans');
+            getOrderList({
+              type:1,
+              //sectionType:loans.nowType
+            },function(res){  
+
+                formatTable(table,res,[
+                  {field: 'code', title: '证券代码', width: 80},
+                  {field: 'name', title: '证券名称', width: 80},
+                  {field: 'volume', title: '股票数量',align:'right', width: 80},
+                  {field: 'usableVolume', title: '可卖数量',align:'right', width:80,templet: function(d){
+                    return '<span class="stock_'+(d.fullCode+'').toLocaleLowerCase()+' canSell" >'+(d.usableVolume)+'</span>'
+                  }},
+                  {field: 'price', title: '成本价',align:'right', width: 100},
+                  { title: '当前价', width: 100,align:'right',templet: function(d){
+                    return '<span class="stock_'+(d.fullCode+'').toLocaleLowerCase()+' gpxj" >----</span>'
+                  }},
+                  {title: '浮动盈亏', width: 100,align:'right',templet: function(d){
+                    return '<span class="stock_'+(d.fullCode+'').toLocaleLowerCase()+' fdyk" data-volume="'+d.volume+'" data-price="'+d.price+'" >----</span>'
+                  }},
+                  {title: '盈亏比例(%)', width: 100,align:'right',templet: function(d){
+                    return '<span class="stock_'+(d.fullCode+'').toLocaleLowerCase()+' ykbl"  data-volume="'+d.volume+'" data-price="'+d.price+'" >----</span>'
+                  }},
+                  {title: '市值', width: 100,align:'right',templet: function(d){
+                    return '<span class="stock_'+(d.fullCode+'').toLocaleLowerCase()+' ccsz"  data-volume="'+d.volume+'" data-price="'+d.price+'" >----</span>'
+                  }}
+                ],{
+                  done: function(res, curr, count){
+                     
+                      if(res.data.length>0){
+                        for (let index = 0; index < res.data.length; index++) {
+                          stock_task.push((res.data[index].fullCode+'').toLocaleLowerCase());
+                        }
+                        startTask(()=>{
+
+                          formatStockData();
+
+                        });
+                      }
+                  }
+                });
+
+            });
+         }
+
+         getUserAssert();
+         getOrder();
+    </script>
+  </body>
+</html>

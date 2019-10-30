@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/position.css" type="text/css" />
+  </head>
+  <body>
+    <div id="app-root">
+        <div class="page_header" style="padding-top: 7px;">
+          <div class="page_title on">
+            <span title="人民币">人民币</span>
+            <em></em>
+          </div>
+        </div>
+
+        <div class="page_body">
+          
+          <div class="user_nums">
+            
+            <div class="user_item c_red">
+                <div class="item_lable">
+                  总  资  产
+                </div>
+                <span id="sumAssets">0.00</span>
+            </div>
+            <div class="user_item c_red">
+                <div class="item_lable">
+                  可用金额
+                </div>
+                <span id="useAssets">0.00</span>
+            </div>
+           
+            <div class="user_item c_red">
+                <div class="item_lable">
+                  投资本金
+                </div>
+                <span id="netAssets" style="color: #4885df;">0.00</span>
+            </div>
+            <div class="user_item c_red">
+                <div class="item_lable">
+                    预警线
+                </div>
+                <span id="lossWarningLine" style="color: #4885df;">0.00</span>
+            </div>
+
+          </div>
+
+          <div class="user_nums">
+            
+              <div class="user_item c_red">
+                  <div class="item_lable">
+                    持仓市值
+                  </div>
+                  <span id="positionAssets">0.00</span>
+              </div>
+              <div class="user_item c_red">
+                  <div class="item_lable">
+                    浮动盈亏
+                  </div>
+                  <span id="sumProfitLoss">0.0</span>
+              </div>
+              <div class="user_item c_red">
+                  <div class="item_lable">
+                    借款金额
+                  </div>
+                  <span id="configAssets" style="color: #4885df;">0.00</span>
+              </div>
+              <div class="user_item c_red">
+                  <div class="item_lable">
+                      止损线
+                  </div>
+                  <span id="lossUnwindLine" style="color: #f04949;">0.00</span>
+              </div>
+  
+            </div>
+
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+    </div>
+
+    <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>
+    <script>
+        var table = layui.table;
+    </script>
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+    <script src="../js/trade.js"></script>
+
+    
+
+   <!-- <script src="http://cdn.jsdelivr.net/npm/eruda"></script>
+		<script>eruda.init();</script> -->
+    
+    <script>
+        
+       
+         var getOrder = getPostionOrder;
+         getUserAssert();
+         getOrder();
+
+          //监听行双击事件
+          tableDouble(function(obj){
+          
+            let code = obj.data.code;
+            console.log(code);
+            let can = 0;
+            if('usableVolume' in obj.data){
+              can = obj.data['usableVolume'];
+            }
+
+            ipcRenderer.sendToHost('topage',{'page':'trade/sell.html',code:code,can:can}) //向webview所在页面发送消息
+         
+        });
+
+       
+         
+    </script>
+  </body>
+</html>

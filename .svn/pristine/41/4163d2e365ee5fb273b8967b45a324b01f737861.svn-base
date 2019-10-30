@@ -1,0 +1,85 @@
+//交易
+function formatBuySell(data,fn){
+    fn = fn || function(){};
+   
+    fn(data);
+    var tmpVolume = [];
+    data.buy.forEach(element => {
+        tmpVolume.push(parseInt(element[0]));
+    });
+    data.sell.forEach(element => {
+        tmpVolume.push(parseInt(element[0]));
+    });
+    var max = Math.max(...tmpVolume);
+
+    for (let index = 0; index < data.buy.length; index++) {
+        let element = data.buy[index];
+        $('.wd_buy_'+(index+1)+' .price').text(parseFloat(element[1])>0? element[1] : '-').css('color',getStockColor(parseFloat(element[1]),parseFloat(data.close)));
+        $('.wd_buy_'+(index+1)+' .volume').text(parseFloat(element[0])>0? element[0] : '-');
+        $('.wd_buy_'+(index+1)+' .lb .process').css('width',parseFloat(element[0])>0? parseInt(element[0]/max*100)+'%' : '0');
+    }
+    for (let index = 0; index < data.sell.length; index++) {
+        let element = data.sell[index];
+        $('.wd_sell_'+(index+1)+' .price').text(parseFloat(element[1])>0? element[1] : '-').css('color',getStockColor(parseFloat(element[1]),parseFloat(data.close)));
+        $('.wd_sell_'+(index+1)+' .volume').text(parseFloat(element[0])>0? element[0] : '-');
+        $('.wd_sell_'+(index+1)+' .lb .process').css('width',parseFloat(element[0])>0? parseInt(element[0]/max*100)+'%' : '0');
+    }
+
+    $('.now_stock_info .price').text((parseFloat(data.price)>0? data.price : '-')).css('color',getStockColor(data.price,data.close));
+    $('.now_stock_info .hig_max').text((parseFloat(data.close)*1.1).toFixed(2)).css('color',getStockColor(1));
+    $('.now_stock_info .low_max').text((parseFloat(data.close)*0.9).toFixed(2)).css('color',getStockColor(-1));
+    $('.now_stock_info .zdf').text(data.changeP+'%').css('color',getStockColor(data.price,data.close));
+    $('#stock_hq_time').text((data.time+'').slice(-8));
+}
+function initBuySell(){
+    for (let index = 0; index < 5; index++) {
+       
+        $('.wd_buy_'+(index+1)+' .price').text('-').css('color','#333333');
+        $('.wd_buy_'+(index+1)+' .volume').text('-');
+        $('.wd_buy_'+(index+1)+' .lb .process').css('width',0);
+   
+        
+        $('.wd_sell_'+(index+1)+' .price').text('-').css('color','#333333');
+        $('.wd_sell_'+(index+1)+' .volume').text('-');
+        $('.wd_sell_'+(index+1)+' .lb .process').css('width','0');
+    }
+
+    $('.now_stock_info .price').text('-').css('color','#333333');
+    $('.now_stock_info .hig_max').text('-').css('color','#333333');
+    $('.now_stock_info .low_max').text('-').css('color','#333333');
+    $('.now_stock_info .zdf').text('-').css('color','#333333');
+    $('#stock_hq_time').text('');
+
+    $('#now_price').val('');
+    $('#stock_code').val('');
+    $('.now_stock_name').text('');
+    $('#stock_code').attr('fullcode','');
+    $('#canSell').val('');
+    
+    //清除临时股票数据
+    if(tmp_task.length>0){
+        delete stock_data[tmp_task[0]];
+        tmp_task=[];
+    }
+}
+
+$(function(){
+    $('body').on('click','.setPrice',function(){
+        if(isNaN(parseFloat($(this).text()))){
+                return false;
+        }
+        var price = parseFloat($(this).text()).toFixed(2);
+        $('#now_price').val(price);
+    });
+})
+
+$(function(){
+    $('body').on('input','#volume',function(){
+        $(this).val($(this).val().replace(/[^\d]/g,''));
+        console.log($('input:radio[name="cw"]').length);
+        $('input:radio[name="cw"]').each(function(index,element){
+            console.log($(this).attr("checked"));
+            $(this).prop("checked",false);
+        });
+    });
+})

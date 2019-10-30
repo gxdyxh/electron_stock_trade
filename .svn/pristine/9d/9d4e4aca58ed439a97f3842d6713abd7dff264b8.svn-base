@@ -1,0 +1,47 @@
+//持仓 
+
+//获取当前用户金额信息
+function getUserAssert(){
+   
+    let user = getNowUser();
+    let loans = getCache('loans');
+    console.log(remote);
+    remote.app.sys.get('/api/trade/get_user_assert',{
+        userId:user.id,
+        sectionType:loans.nowType
+    },function(res){
+        console.log('getUserAssert',res);
+        if(res.status==200){
+            for (x in res.data)
+            {   
+                if($('#'+x).prop("tagName")=="INPUT"){
+                    $('#'+x).val(parseFloat(res.data[x]).toFixed(2));
+                }else{
+                    $('#'+x).text(parseFloat(res.data[x]).toFixed(2));
+                }
+              
+            }
+            if(res.data['sumProfitLoss']>0){
+                $('#sumProfitLoss').css('color','#f04949');
+            }
+            if(res.data['sumProfitLoss']<0){
+                $('#sumProfitLoss').css('color','green');
+            }
+        }
+    })
+}
+//获取订单列表
+function getOrderList(param,cb){
+    remote.app.sys.get('/api/trade/coin_trade_list',param,function(res){
+        console.log('getOrderList',param,res);
+        if(res.status ==200 ){
+            cb && cb(JSON.parse(JSON.stringify(res.data)));
+        }
+    })
+}
+
+//获取委托列表
+function getEntrustList(param,cb){
+    getList('/api/trade/coin_trade_list',param,cb);
+}
+

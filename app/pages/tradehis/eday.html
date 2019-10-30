@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/trade.css" type="text/css" />
+
+  </head>
+  <body>
+    <div id="app-root">
+       
+        <div class="page_body">
+        
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+
+
+    </div>
+    <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+    
+
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>  
+    
+    <script>
+         var table = layui.table;
+
+         function getOrder(){
+          let loans = getCache('loans');
+            getList('/api/trade/coin_trade_detail_list',{
+              day:1,
+              tradeStatus:2,
+              type:2,
+              pageSize:1000,
+              pageNumber:1
+              //sectionType:loans.nowType
+            },function(res){  
+                console.log('getEntrustList',res);
+                formatTable(table,res,[
+
+                  {field: 'createDate', title: '委托时间', width: 80,templet:function(d){
+                    return remote.app.untils.formatTime("hh:mm:ss",d.createDate);
+                  }},
+                  {field: 'code', title: '证券代码', width: 80},
+                  {field: 'name', title: '证券名称', width: 80},
+                  {field: 'tradeType', title: '操作', width: 80,templet: function(d){
+                    return d.tradeType == 2? '买入':'卖出';
+                  }},
+                  { title: '备注', width: 100,templet: function(d){
+                      if(d.usableVolume == 0){
+                          return '未成交';
+                      }
+                      if(d.usableVolume == d.volume){
+                          return '全部成交';
+                      }
+                    return '部分成交';
+                  }},
+                  {field: 'volume', title: '委托数量',align:'right', width: 80},
+                  {field: 'usableVolume', title: '成交数量',align:'right', width: 80},
+                  {field: 'price', title: '委托价格',align:'right', width: 80,templet: function(d){
+                    return parseFloat(d.price).toFixed(2);
+                  }},
+                  {field: 'price', title: '成交均价',align:'right', width: 80,templet: function(d){
+                    return parseFloat(d.price).toFixed(2);
+                  }},
+                 
+                ],{
+                  
+                  done: function(res, curr, count){
+                    if(res.data.length>0){
+                        for (let index = 0; index < res.data.length; index++) {
+                          var color = '#0000FA';
+                          if(res.data[index].tradeType==2){
+                            color = '#FC0000';
+                          }
+                          $('tr[data-index="'+index+'"]').css('color',color);
+                        }
+                      }
+                  }
+                });
+
+            });
+         }
+
+         getOrder();
+
+    </script>
+  </body>
+</html>

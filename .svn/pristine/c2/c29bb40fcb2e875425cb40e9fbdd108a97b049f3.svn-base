@@ -1,0 +1,33 @@
+
+.page_header{
+    border-bottom:solid 1px #AAB7C7;
+    font-size: 12px;
+    flex: 0 1 auto;
+}
+.page_body{
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+}
+
+.user_nums {
+    margin-left: 20px;
+    font-size:13px; 
+    margin-top:8px;
+    clear: both;
+    overflow: hidden;
+    flex: 0 1 auto;
+}
+.user_nums .user_item{
+    width: 150px;
+    text-align: right;
+    float: left;
+    margin-right: 20px;
+}
+.user_nums .user_item  .item_lable{
+    float: left;
+    color: #333;
+}
+.data-table{
+    flex: 1 1 auto;
+}

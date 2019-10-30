@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/trade.css" type="text/css" />
+
+  </head>
+  <body>
+    <div id="app-root">
+        <div class="page_header">
+            <div class="trade_box">
+                <div class="trade_nums buy">
+
+                  <div class="trade_type_title">买入股票</div>
+                  <div class="trade_box_item">
+                    <label>证券代码</label>
+                    <div class="input_box">
+                      <input type="text" id="stock_code"  maxlength="6">
+                    </div>
+                  </div>
+                  <div class="trade_box_item">
+                    <label>证券名称</label>
+                    <div class="input_box">
+                      <span class="now_stock_name"></span>
+                    </div>
+                  </div>
+                  <div class="trade_box_item">
+                    <label>买入价格</label>
+                    <div class="input_box">
+                      <input type="text" id="now_price" maxlength="6"  class="c_red">
+                    </div>
+                  </div>
+
+                  <div class="trade_box_item" style="display: none;">
+                    <label>可用余额</label>
+                    <div class="input_box">
+                      <input type="number" class="input_no_border" disabled id="useAssets">
+                    </div>
+                  </div>
+
+                  <div class="trade_box_item">
+                      <label>可买(股)</label>
+                      <div class="input_box">
+                        <input type="number" class="input_no_border" disabled id="canBuy">
+                      </div>
+                  </div>
+
+                  <div style="text-align: right; padding-right: 15px;">
+                    <label><input name="cw" onclick="setCw(2);" type="radio">1/2</label>
+                    <label><input name="cw" onclick="setCw(3);" type="radio">1/3</label>
+                    <label><input name="cw" onclick="setCw(4);" type="radio">1/4</label>
+                  </div>
+
+                  <div class="trade_box_item">
+                    <label>买入数量</label>
+                    <div class="input_box">
+                      <input type="number" id="volume" >
+                    </div>
+                  </div>
+                  <div style="margin-top: 10px;">
+                    <a class="trade_btn" href="javascript:void(0);" onclick="initBuySell();"> 重填 </a>
+                    <a class="trade_btn" href="javascript:void(0);" onclick="actionStock();"> 买入 </a>
+                  </div>
+
+
+                </div>
+
+                <div class="wudang_box">
+                  <div style="color: #b1afaf; font-size:12px;">数据来源&nbsp;&nbsp;行情主站<span id="stock_hq_time" style="float: right;"></span></div>
+                  <div class="wudang_info">
+                      <div class="wd_item wd_sell_5">
+                          <div class="lable">卖五</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb"><div class="process"></div></div>
+                          <div class="volume">-</div>
+                      </div>
+                      <div class="wd_item wd_sell_4">
+                          <div class="lable">卖四</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb"><div class="process"></div></div>
+                          <div class="volume">-</div>
+                      </div>
+                      <div class="wd_item wd_sell_3">
+                          <div class="lable">卖三</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb"><div class="process"></div></div>
+                          <div class="volume">-</div>
+                      </div>
+                      <div class="wd_item wd_sell_2">
+                          <div class="lable">卖二</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb"><div class="process"></div></div>
+                          <div class="volume">-</div>
+                      </div>
+                      <div class="wd_item wd_sell_1">
+                          <div class="lable">卖一</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb"><div class="process"></div></div>
+                          <div class="volume">-</div>
+                      </div>
+
+                      <div class="wd_item t-border b-border now_stock_info">
+                          <div class="lable">最新</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb">涨幅</div>
+                          <div class="volume zdf">-</div>
+                      </div>
+
+                      <div class="wd_item wd_buy_1">
+                          <div class="lable">买一</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb"><div class="process"></div></div>
+                          <div class="volume">-</div>
+                      </div>
+                      <div class="wd_item wd_buy_2">
+                          <div class="lable">买二</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb"><div class="process"></div></div>
+                          <div class="volume">-</div>
+                      </div>
+                      <div class="wd_item wd_buy_3">
+                          <div class="lable">买三</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb"><div class="process"></div></div>
+                          <div class="volume">-</div>
+                      </div>
+                      <div class="wd_item wd_buy_4">
+                          <div class="lable">买四</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb"><div class="process"></div></div>
+                          <div class="volume">-</div>
+                      </div>
+                      <div class="wd_item wd_buy_5">
+                          <div class="lable">买五</div>
+                          <div class="price setPrice">-</div>
+                          <div class="lb"><div class="process"></div></div>
+                          <div class="volume">-</div>
+                      </div>
+                      <div class="wd_item t-border now_stock_info">
+                          <div class="lable">涨停</div>
+                          <div class="price hig_max setPrice">-</div>
+                          <div class="lb">跌停</div>
+                          <div class="volume low_max setPrice">-</div>
+                      </div>
+
+
+                  </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="page_body">
+        
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+
+
+    </div>
+    <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+    <script src="../js/trade.js"></script>
+
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>  
+    
+    <script>
+         var table = layui.table;
+        
+         function getOrder(){
+          let loans = getCache('loans');
+            getOrderList({
+              type:1,
+              //sectionType:loans.nowType
+            },function(res){  
+
+                formatTable(table,res,[
+                  {field: 'code', title: '证券代码', width: 80},
+                  {field: 'name', title: '证券名称', width: 80},
+                  {field: 'volume', title: '股票数量',align:'right', width: 80},
+                  {field: 'usableVolume', title: '可卖数量',align:'right', width:80,templet: function(d){
+                    return '<span class="stock_'+(d.fullCode+'').toLocaleLowerCase()+' canSell" >'+(d.usableVolume)+'</span>'
+                  }},
+                  {field: 'price', title: '成本价',align:'right', width: 100},
+                  { title: '当前价', width: 100,align:'right',templet: function(d){
+                    return '<span class="stock_'+(d.fullCode+'').toLocaleLowerCase()+' gpxj" >----</span>'
+                  }},
+                  {title: '浮动盈亏', width: 100,align:'right',templet: function(d){
+                    return '<span class="stock_'+(d.fullCode+'').toLocaleLowerCase()+' fdyk" data-volume="'+d.volume+'" data-price="'+d.price+'" >----</span>'
+                  }},
+                  {title: '盈亏比例(%)', width: 100,align:'right',templet: function(d){
+                    return '<span class="stock_'+(d.fullCode+'').toLocaleLowerCase()+' ykbl"  data-volume="'+d.volume+'" data-price="'+d.price+'" >----</span>'
+                  }},
+                  {title: '市值', width: 100,align:'right',templet: function(d){
+                    return '<span class="stock_'+(d.fullCode+'').toLocaleLowerCase()+' ccsz"  data-volume="'+d.volume+'" data-price="'+d.price+'" >----</span>'
+                  }}
+                ],{
+                  done: function(res, curr, count){
+                     
+                      if(res.data.length>0){
+                        for (let index = 0; index < res.data.length; index++) {
+                          stock_task.push((res.data[index].fullCode+'').toLocaleLowerCase());
+                        }
+                        startTask(()=>{
+
+                          formatStockData(formatBuySell);
+
+                        });
+                      }
+                  }
+                });
+
+            });
+         }
+
+         //监听行双击事件
+        table.on('rowDouble(test)', function(obj){
+          console.log(obj); //双击把信息注入到 买卖框里
+            let code = (obj.data.fullCode+'').toLocaleLowerCase();
+            if(code in stock_data){
+              tmp_task=[];
+              tmp_task.push(code);
+             
+              formatBuySell(stock_data[code],function(data){
+                  $('#now_price').val(data.sell[0][1]);
+                  $('#stock_code').val(data.code);
+                  $('.now_stock_name').text(data.name);
+                  $('#stock_code').attr('fullcode',data.sybmol);
+                  $('#canBuy').val(0);
+              });
+              
+            }
+        });
+
+         getUserAssert();
+         getOrder();
+
+          //设置仓位
+         function setCw(type){
+              var money = parseFloat($('#useAssets').val());
+              if(isNaN(money)){
+                money = 0;
+              }
+              var price = parseFloat($('#now_price').val());
+              if(isNaN(price)){
+                price = 0;
+              }
+
+
+              if(money==0 || price==0){
+                $('#canBuy').val(0);  
+                return;
+              } 
+
+              $('#canBuy').val(parseInt(money/price/100)*100);  
+            
+              var volume = parseInt((money/type)/price/100)*100;
+              if(volume<100){
+                return;
+              }
+              $('#volume').val(volume);
+
+             
+
+         }
+          //操作买入卖出
+         function actionStock(){
+           
+            var fullCode = $('#stock_code').attr('fullcode');
+            var price = parseFloat($('#now_price').val());
+            price = isNaN(price) ? 0 : price ;
+            var tradeType = 2;
+            var volume = parseFloat($('#volume').val());
+            volume = isNaN(volume)? 0 : volume ;
+
+            if($('#stock_code').val().length!=6){
+                remote.app.untils.alert('请输入代码','委托提醒','warning');
+                return ;
+            }
+            if(!price){
+                remote.app.untils.alert('请输入委托价格','委托提醒','warning');
+                return ;
+            }
+            if(!volume){
+                remote.app.untils.alert('请输入委托数量','委托提醒','warning');
+                return ;
+            }
+          
+
+            var result = remote.app.untils.dialogsync('操作类别：买入\n股票代码：'+$('#stock_code').val()+' '+$('.now_stock_name').text()+'\n委托价格：'+$('#now_price').val()+'\n委托数量：'+volume+'\n委托方式：限价委托','提示','question',{buttons:['买入确认','取消'],defaultId :0,cancelId :1,noLink:true});
+           
+            if(result==0){
+              remote.app.sys.post('/api/trade/coin_trade',{fullCode:fullCode,price:price,tradeType:tradeType,volume:volume},function(res){
+                  if(res.status ==200 ){
+                      initBuySell();
+                      getOrder();
+                      //cb && cb(JSON.parse(JSON.stringify(res.data)));
+                  }
+                  remote.app.untils.alert(res.msg,'委托提醒','warning');
+              })
+            }
+            
+
+
+         }
+         
+         $(function(){
+              $('body').on('focus','#volume',function(){
+                var money = parseFloat($('#useAssets').val());
+              if(isNaN(money)){
+                money = 0;
+              }
+              var price = parseFloat($('#now_price').val());
+              if(isNaN(price)){
+                price = 0;
+              }
+
+
+              if(money==0 || price==0){
+                $('#canBuy').val(0);  
+                return;
+              } 
+              $('#canBuy').val(parseInt(money/price/100)*100);  
+              });
+          })
+
+
+
+          $(function(){
+              $('body').on('input','#stock_code',function(){
+                  $(this).val($(this).val().replace(/[^\d]/g,''));
+                  if($(this).val()==''){
+                      initBuySell();
+                      return;
+                  }
+                  if($(this).val().length==6){
+                        
+                      searchStock($(this).val(),data=>{
+                          tmp_task=[];
+                          tmp_task.push((data[0].fullCode+'').toLocaleLowerCase());
+                          var key = (data[0].fullCode+'').toLocaleLowerCase();
+                          console.log(tmp_task);
+                        getStock(()=>{
+                            formatBuySell(stock_data[key],function(data){
+                              $('#now_price').val(data.sell[0][1]);
+                              $('#stock_code').val(data.code);
+                              $('.now_stock_name').text(data.name);
+                              $('#stock_code').attr('fullcode',data.sybmol);
+                              $('#canBuy').val(0);
+                            });
+                        })
+                        
+                      });
+                  }
+              })
+          })
+
+
+
+
+    </script>
+  </body>
+</html>

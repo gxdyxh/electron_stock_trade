@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/trade.css" type="text/css" />
+    <style>
+
+    .trade_box_item .input_box{
+      width: 140px;
+    }
+    .trade_nums {
+      width: 215px;
+    }
+    .trade_box_item .input_box input {
+        width: 98%;
+    }
+    .wudang_info{
+      margin-top: 0px;
+    }
+    .wd_item {
+      line-height: 30px;
+    }
+    .wd_item .lable {
+      width: 70px;
+      color: #ff0b0b;
+    }
+   
+    .wd_item .volume {
+      width: 90px; 
+    }
+    .wudang_box{
+      width: unset;
+    }
+    .copyBtn{
+      color:#282afd;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="app-root">
+        <div class="page_header">
+            <div class="trade_box">
+                <div class="trade_nums sell">
+
+                  <div class="trade_type_title">银证转出</div>
+     
+                  <div class="trade_box_item">
+                    <label>汇款金额</label>
+                    <div class="input_box">
+                      <input type="number" id="money" maxlength="6">
+                    </div>
+                  </div>
+
+                  <div class="trade_box_item">
+                      <label>可用余额</label>
+                      <div class="input_box">
+                        <input type="number" class="input_no_border"  disabled id="useAssets">
+                      </div>
+                  </div>
+                
+                  <div style="margin-top: 10px;">
+                    <a class="trade_btn" href="javascript:void(0);" onclick="initBuySell();"> 重填 </a>
+                    <a class="trade_btn" href="javascript:void(0);" onclick="actionRec();"> 确定 </a>
+                  </div>
+
+
+                </div>
+
+                
+              
+            </div>
+        </div>
+
+        <div class="page_body">
+        
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+    </div>
+   
+    <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+    
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+    <script src="../js/loans.js"></script>
+
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>  
+    
+    <script>
+
+         var methodId = 9; 
+
+         var table = layui.table;
+         var layer = layui.layer;
+        
+         function initBuySell(){
+            $('#money').val('');
+         }
+
+
+         function getOrder(){
+          let loans = getCache('loans');
+            getList('/api/user/recharge_order_list',{type:0,orderStatus:1,pageSize:1000,pageNumber:1},function(res){  
+
+                formatTable(table,res,[
+                  {field:'acttype', title: '名称', width: 80,templet: function(d){
+                      if(d.acttype==1){
+                        return '充值';
+                      }
+                    return '提现'
+                  }},
+                  
+                  {field: 'money', title: '金额',align:'right', width: 80},
+                  {field: 'createDate', title: '时间',align:'right', width: 150,templet: function(d){return remote.app.untils.formatTime("yyyy/MM/dd hh:mm:ss",d.createDate);}},
+                  {field: 'orderNo', title: '订单号',align:'right', width: 120},
+                  {field: 'orderStatus', title: '状态', width: 80,templet: function(d){
+                      if(d.orderStatus==0){
+                          return '<span color="red">失败</span>';
+                      }
+                      if(d.orderStatus==1){
+                          if(d.acttype==1){
+                              return '待付款';   
+                          }else{
+                              return '提现中'; 
+                          }
+                      }
+                      if(d.orderStatus==2){
+                          return '<span color="green">成功</span>';
+                      }
+                      if(d.orderStatus==3){
+                          return '待确认';
+                      }
+                      return '--'
+                    }
+                  },
+                ]);
+
+            });
+         }
+
+         function getUserVolume(params) {
+           http.get('/api/assets/my_wallet_balance',{accountId:1},function (res) {
+              console.log('getUserVolume',res);
+              if(res.status==200){
+                $('#useAssets').val(parseFloat(res.data.volume).toFixed(2));
+              }else{
+                layer.msg(res.msg);
+              }   
+           })
+         }
+        
+         getUserVolume();
+         getOrder();
+
+         
+          //操作配资
+         function actionRec(){
+           
+            var price = parseFloat($('#money').val());
+            price = isNaN(price) ? 0 : price ;
+           
+            if(!price){
+                remote.app.untils.alert('请输入转出金额','出金提醒','warning');
+                return ;
+            }
+           
+
+            var result = remote.app.untils.dialogsync('操作类别：银证转出\n转出金额：'+price,'提示','question',{buttons:['转出确认','取消'],defaultId :0,cancelId :1,noLink:true});
+            if(result==0){
+              remote.app.sys.post('/api/user/user_withdrawal',{volume:price,accountId:methodId},function(res){
+                  console.log(res);
+                  if(res.status ==200 ){
+                      initBuySell();
+                      getOrder();
+                      getUserVolume();
+                  }
+                  remote.app.untils.alert(res.msg,'出金提醒','warning');
+              })
+            } 
+            
+            
+         }
+
+        
+
+          $(function(){
+              $('body').on('input','#money',function(){
+                  $(this).val($(this).val().replace(/[^\d]/g,''));  
+              })
+             
+          })
+
+    </script>
+  </body>
+</html>

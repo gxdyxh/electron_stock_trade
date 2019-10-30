@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/trade.css" type="text/css" />
+    <style>
+
+    .trade_box_item .input_box{
+      width: 140px;
+    }
+    .trade_nums {
+      width: 215px;
+    }
+    .trade_box_item .input_box input {
+        width: 98%;
+    }
+    .wudang_info{
+      margin-top: 0px;
+    }
+    .wd_item {
+      line-height: 30px;
+    }
+    .wd_item .lable {
+      width: 70px;
+      color: #ff0b0b;
+    }
+   
+    .wd_item .volume {
+      width: 90px; 
+    }
+    .wudang_box{
+      width: unset;
+    }
+    .copyBtn{
+      color:#282afd;
+      cursor: pointer;
+    }
+    </style>
+  </head>
+  <body>
+    <div id="app-root">
+        <div class="page_header">
+            <div class="trade_box">
+                <div class="trade_nums buy">
+
+                  <div class="trade_type_title">银证转入</div>
+     
+                  <div class="trade_box_item">
+                    <label>汇款金额</label>
+                    <div class="input_box">
+                      <input type="number" id="money" maxlength="6">
+                    </div>
+                  </div>
+
+                  <div class="trade_box_item">
+                      <label>汇款姓名</label>
+                      <div class="input_box">
+                        <input type="text" id="payname" maxlength="6">
+                      </div>
+                    </div>
+                
+                  <!-- <div class="trade_box_item">
+                    <label>汇款限制</label>
+                    <div class="input_box">
+                        <span class="now_stock_name">100~50000</span>
+                    </div>
+                  </div> -->
+
+                  <div style="margin-top: 10px;">
+                    <a class="trade_btn" href="javascript:void(0);" onclick="initBuySell();"> 重填 </a>
+                    <a class="trade_btn" href="javascript:void(0);" onclick="actionRec();"> 确定 </a>
+                  </div>
+
+
+                </div>
+
+                <div class="wudang_box bankInfo" style="display: none;" >
+                    <div style="color: #b1afaf; font-size:12px;">汇款详情</div>
+                    
+                    <div style="display: flex;flex-direction: row;">
+                    
+                    <div class="wudang_info" style="padding: 0 15px 5px;">
+                      <div class="wd_item wd_sell_5">
+                          <div class="lable" style="color: #333;">汇款金额</div>
+                          <div class="volume hkje" style="font-size: 18px;color: #ff0b0b;">--</div>
+                      </div>
+                      <div class="wd_item wd_sell_4">
+                          <div class="lable">
+                            <select id="payMethod"></select>
+                          </div>
+                          <div class="volume yhmc" >-</div>
+                      </div>
+                      <div class="wd_item wd_sell_3">
+                          <div class="lable">
+                              <a class="trade_btn" href="javascript:void(0);" onclick="markOrder(0);"> 取消订单 </a>
+                          </div>
+                         
+                          <div class="volume jkje">
+                            <a class="trade_btn" href="javascript:void(0);" onclick="markOrder(3);"> 标记付款 </a>
+                          </div>
+                      </div>
+                  
+                    </div>
+
+                    <div class="wudang_info" style="padding: 0 15px 5px;width: unset;border:none;">
+                        <div class="wd_item ">
+                          <div class="lable" style="width: 30px;">
+                            名称
+                          </div>
+                          <div class="volume bankUser" style=" flex: 1 1 auto; width:unset;min-width: 150px;">
+                            ---
+                          </div>
+                          <div class="copyBtn" data-type="bankUser" style=" flex: 0 0 auto;padding-left: 10px;">
+                            复制
+                          </div>
+                        </div>
+                        <div class="wd_item ">
+                            <div class="lable" style="width: 30px;">
+                              账号
+                            </div>
+                            <div class="volume bankAccount" style=" flex: 1 1 auto; width:unset;min-width: 150px;">
+                              ---
+                            </div>
+                            <div class="copyBtn" data-type="bankAccount"  style=" flex: 0 0 auto;padding-left: 10px;">
+                              复制
+                            </div>
+                          </div>
+                          <div class="wd_item ">
+                              <div class="lable" style="width: 30px;">
+                                支行
+                              </div>
+                              <div class="volume bankDev" style=" flex: 1 1 auto; width:unset;min-width: 150px;">
+                                ----
+                              </div>
+                              <div class="copyBtn" data-type="bankDev" style=" flex: 0 0 auto;padding-left: 10px;">
+                                复制
+                              </div>
+                            </div>
+                    </div>
+
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <div class="page_body">
+        
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+
+
+    </div>
+   
+    <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+    <script src="../js/loans.js"></script>
+
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>  
+    
+    <script>
+         var table = layui.table;
+         var layer = layui.layer;
+        
+         function initBuySell(){
+            $('#money').val('');
+            $('#payname').val('');
+         }
+
+
+         function getOrder(){
+          let loans = getCache('loans');
+            getList('/api/user/recharge_order_list',{type:1,orderStatus:9,pageSize:1000,pageNumber:1},function(res){  
+
+                formatTable(table,res,[
+                  {field:'acttype', title: '名称', width: 80,templet: function(d){
+                      if(d.acttype==1){
+                        return '充值';
+                      }
+                    return '提现'
+                  }},
+                  
+                  {field: 'money', title: '金额',align:'right', width: 80},
+                  {field: 'createDate', title: '时间',align:'right', width: 150,templet: function(d){return remote.app.untils.formatTime("yyyy/MM/dd hh:mm:ss",d.createDate);}},
+                  {field: 'orderNo', title: '订单号',align:'right', width: 120},
+                  {field: 'orderStatus', title: '状态', width: 80,templet: function(d){
+                      if(d.orderStatus==0){
+                          return '<span color="red">失败</span>';
+                      }
+                      if(d.orderStatus==1){
+                          if(d.acttype==1){
+                              return '待付款';   
+                          }else{
+                              return '提现中'; 
+                          }
+                      }
+                      if(d.orderStatus==2){
+                          return '<span color="green">成功</span>';
+                      }
+                      if(d.orderStatus==3){
+                          return '待确认';
+                      }
+                      return '--'
+                    }
+                  },
+                ]);
+
+            });
+         }
+
+        
+         //getUserAssert();
+         getOrder();
+
+         
+          //操作配资
+         function actionRec(){
+           
+            var price = parseFloat($('#money').val());
+            price = isNaN(price) ? 0 : price ;
+           
+            if(!price){
+                remote.app.untils.alert('请输入汇款金额','入金提醒','warning');
+                return ;
+            }
+
+            var pname = $('#payname').val();
+         
+           
+            if(!pname){
+                remote.app.untils.alert('请输入汇款姓名','入金提醒','warning');
+                return ;
+            }
+           
+            var result = remote.app.untils.dialogsync('操作类别：银证转入\n转入金额：'+price+'\n汇款姓名：'+pname,'提示','question',{buttons:['转入确认','取消'],defaultId :0,cancelId :1,noLink:true});
+            
+            if(result==0){
+                remote.app.sys.post('/api/assets/next_recharge',{money:price,payName:pname,payCode:3},function(res){
+                    console.log(res);
+                    if(res.status ==200 ){
+                        initBuySell();
+                        getOrder();
+                        getDetail(res.data.orderNo);
+                        //cb && cb(JSON.parse(JSON.stringify(res.data)));
+                    }
+                    remote.app.untils.alert(res.msg,'入金提醒','warning');
+                })  
+              }
+         }
+
+         var nowOrder = '';
+         var nowMethods = '';
+         function getDetail(oid){
+            nowOrder = oid;
+            remote.app.sys.get('/web/api/recharge_order_detail',{orderNo:oid},function(res){ 
+                 if(res.status ==200 ){
+                  nowMethods = res.data.payMethods;
+
+                    $('.hkje').text(parseFloat(res.data.money).toFixed(2));
+                    $('#payMethod').html('');
+                    var typeArr=['A','B','C','D','E','F','G'];
+                    for (let index = 0; index < nowMethods.length; index++) {
+                      $('#payMethod').append('<option value="'+index+'"> 方式'+typeArr[index]+' </option>');  
+                    }
+                    setNowMethod(0);
+                     $('.bankInfo').show();
+                 }else{
+                  remote.app.untils.alert(res.msg,'订单详情','warning');
+                 }
+                
+            })  
+         }
+
+         function setNowMethod(i){
+           var method =  nowMethods[i];
+            $('.yhmc').text(method.bankName);
+            $('.bankUser').text(method.bankUser);
+            $('.bankAccount').text(method.bankAccount);
+            $('.bankDev').text(method.bankDev);
+         }
+
+         $('body').on('change','#payMethod',function(){
+            setNowMethod($(this).val());
+         });
+
+
+      //监听行双击事件
+        table.on('rowDouble(test)', function(obj){
+                console.log(obj); //双击把信息注入到 买卖框里
+                if( obj.data.acttype==1 && obj.data.orderStatus==1){
+                 
+                  getDetail(obj.data.orderNo);
+                }
+        });
+        //标记付款
+        function markOrder(status) {
+          if(nowOrder){
+            uporder(nowOrder,status);
+          }
+        }
+
+        //更新订单
+        function uporder(ono,status){
+          var data =  {'order_no':ono,'order_status':status};
+          http.post('/web/api/call_back_order_status',data,function (res) {
+             
+              if(res.status==200){
+                getOrder();
+                $('.bankInfo').hide();
+                layer.msg('操作成功');
+              }else{
+                layer.msg(res.msg);
+              }
+            });
+        }
+
+          $(function(){
+              $('body').on('input','#money',function(){
+                  $(this).val($(this).val().replace(/[^\d]/g,''));  
+              })
+
+              $('body').on('click','.copyBtn',function(){
+                var method =  nowMethods[$('#payMethod').val()];
+                var type = $(this).attr('data-type');
+                remote.app.sys.copy(method[type]);
+                layer.msg('复制成功');
+              });
+          })
+
+    </script>
+  </body>
+</html>

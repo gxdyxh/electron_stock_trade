@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>资金股票</title>
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css"  media="all">
+    <link rel="stylesheet" href="../css/common.css" type="text/css" />
+    <link rel="stylesheet" href="../css/trade.css" type="text/css" />
+    
+  </head>
+  <body>
+    <div id="app-root">
+        
+
+        <div class="page_body">
+        
+          <div class="data-table">
+              <table id="dataTable" lay-filter="test"></table>
+          </div>
+
+        </div>
+
+
+
+    </div>
+   
+    <script>window.$ = window.jQuery = require("../lib/jquery.min");</script>
+    <script src="../js/common.js"></script>
+    <script src="../js/position.js"></script>
+    <script src="../js/loans.js"></script>
+
+    <script src="../lib/layui-v2.5.5/layui.all.js"></script>  
+    
+    <script>
+         var table = layui.table;
+        
+        
+
+         function getOrder(){
+          let loans = getCache('loans');
+            getList('/api/loans/refund_loans_detail',{type:1,pageSize:1000,pageNumber:1},function(res){  
+
+                formatTable(table,res,[
+                  {field: 'loansType', title: '借款类型', width: 80,templet: function(d){
+                      if(d.loansType==1){
+                        return '按天借款';
+                      }
+                      if(d.loansType==2){
+                        return '按月借款';
+                      }
+                    return '免费体验'
+                  }},
+                  {field: 'loansMultiple', title: '借款倍数',align:'right', width: 80,templet: function(d){return d.loansMultiple+'倍'}},
+                  {field: 'money', title: '投资本金',align:'right', width: 80},
+                  {field: 'loansMoney', title: '借款金额',align:'right', width: 80},
+                  {field: 'adminCostRate', title: '借款利率',align:'right', width: 80,templet: function(d){return d.adminCostRate==0 ?'免费': d.adminCostRate+'%'}},
+                  {field: 'adminCost', title: '利息费',align:'right', width: 120,templet: function(d){return parseFloat(d.adminCost).toFixed(2)+'元/'+(d.loansType==2?'月':'天')}},
+                  {field: 'createDate', title: '借款时间',align:'right', width: 150,templet: function(d){return remote.app.untils.formatTime("yyyy/MM/dd hh:mm:ss",d.createDate);}},
+                  {field: 'createDate', title: '还款时间',align:'right', width: 150,templet: function(d){return remote.app.untils.formatTime("yyyy/MM/dd hh:mm:ss",d.refundDate);}},
+                  
+                ]);
+
+            });
+         }
+
+         getOrder();
+
+         
+
+    </script>
+  </body>
+</html>

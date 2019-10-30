@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+    <link rel="stylesheet" href="css/login.css" type="text/css" />
+  </head>
+  <body>
+        <div id="app-root">
+         
+      <header>
+        <div style="-webkit-app-region: drag; width: 380px;">
+            金牛所网上交易V<span id="version">2.28</span>
+        </div>
+       <div class="close" onclick="planClose(true);"></div>
+      </header>
+     
+      <div class="login_from">
+          
+          <div class="from_item">
+           <div class="from_lable">
+              证券公司：
+            </div>
+            <div>
+              <select class="input-common" style="width: 100px;">
+                  <option>平安证券</option>
+                  <option>东莞证券</option>
+                  <option>中信证券</option>
+                  <option>第一创业</option>
+                  <option>广发证券</option>
+                  <option>广大证券</option>
+                  <option>天风证券</option>
+                  <option>兴业证券</option>
+                  <option>中山证券</option>
+                  <option>长江证券</option>
+              </select>
+              <select class="input-common" style="width: 100px;">
+                  <option>上海电信01</option>
+                  <option>深圳电信01</option>
+                  <option>上海双线02</option>
+                  <option>深圳双线02</option>
+                  <option>广州电信01</option>
+                  <option>北京电信01</option>
+              </select>
+              <input id="protect_acc"  type="checkbox">保护账号
+            </div>
+          </div>
+          
+    
+          <div class="from_item">
+            <div class="from_lable">
+              登录账号：
+            </div>
+            <div>
+              <input type="text" id="account" class="input-common">
+              <input id="memory_acc" type="checkbox">记住账号
+            </div>
+          </div>
+
+          <div class="from_item">
+            <div class="from_lable">
+              登录密码：
+            </div>
+            <div>
+              <input  type="password" id="password" class="input-common">
+              <input id="memory_pwd" type="checkbox">记住密码
+            </div>
+          </div>
+          <div class="from_item" style="text-align: left ; float: left;margin-left: 19px;margin-top: 4px; width: 95%;">
+               <input type="button" onclick="openUrl('http://www.jns1818.com/register');" value="帮助" style="display: inline-block; padding: 3px 26px; margin: 0 3px;"> 
+               <input type="button" value="取消" onclick="planClose(true);" style="display: inline-block;padding: 3px 26px;margin: 0 3px;"> 
+               <input type="button" value="确定" onclick="login();" style="display: inline-block;padding: 3px 26px;margin: 0 3px;"> 
+               <span style="float: right;">通讯设置</span>
+          </div>
+          <div style="clear: both;"></div>
+      </div>
+      <div style="padding-left:15px;height: 25px;line-height: 25px;margin-top: 5px;" id="tipbox">
+          请输入账号信息！
+       </div>
+      </div>
+      <script>window.$ = window.jQuery = require("./lib/jquery.min");</script>
+      <script src="./js/common.js"></script>
+      <script src="./js/login.js"></script>
+      <script>
+        $(function(){
+
+            $('#version').text(remote.app.getVersion());
+
+            var def_login_conf = getCache('def_login_conf');
+            protec_acc(def_login_conf);
+            set_acc(def_login_conf);
+            set_pwd(def_login_conf);
+
+           $('#protect_acc').click(function(){
+                def_login_conf.protect_acc = $("#protect_acc").is(":checked");
+                setCache('def_login_conf',def_login_conf);
+                protec_acc(def_login_conf);
+           })
+        })
+      </script>
+
+    <script>
+      const { ipcRenderer } = require('electron');
+      ipcRenderer.on('message', (event, { message, data }) => {
+          console.log(message, data);
+          switch (message) {
+              case 'isUpdateNow':
+              var result = remote.app.untils.dialogsync('检测到当前有新版更新。','版本提示','info',{buttons:['立即更新','关闭'],defaultId :0,cancelId :1,noLink:true});
+              if(result==0){
+                ipcRenderer.send('updateNow');
+              }else{
+                close();
+              }
+          }
+      });
+    </script>
+  </body>
+</html>
