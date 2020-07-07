@@ -51,7 +51,7 @@
   "author": "jns1818.com",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^4.2.5",
+    "electron": "^9.1.0",
     "electron-builder": "^21.2.0",
     "electron-rebuild": "^1.8.6"
   },
